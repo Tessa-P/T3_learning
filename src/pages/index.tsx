@@ -8,9 +8,21 @@ import type { RouterOutputs } from "~/utils/api";
 // import dayjs from "dayjs";
 // import relativeTime from "dayjs/plugin/relativeTime"
 import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 
 const CreatePostWizard = () => {
   const { user } = useUser()
+
+  const [input, setInput] = useState("")
+
+  const ctx = api.useContext()
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("")
+      void ctx.posts.getAll.invalidate()
+    }
+  })
 
   if (!user) return null
 
@@ -21,9 +33,14 @@ const CreatePostWizard = () => {
       className = "w-10 h-10 rounded-full"
     />
     <input 
-      placeholder="Type some emojis!" 
+      placeholder="Type something!" 
       className="bg-transparent grow outline-none" 
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      disabled={isPosting}
     />
+    <button onClick={() => mutate({ content: input })}>Post</button>
   </div>
 }
 
@@ -46,7 +63,7 @@ const PostView = (props: PostWithUser) => {
           <span className="font-thin">{` · 1 hour ago`}</span>
           {/* Supposed to have relative time thing, but i couldn't make it work ts: ~1h1m*/}
         </div>
-        <span>{post.content}</span>
+        <span className="text-2xl">{post.content}</span>
       </div>
     </div>
   )
@@ -60,7 +77,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col"> 
-      {[...data, ...data]?.map((fullPost) => (
+      {data?.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
