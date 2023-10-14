@@ -83,8 +83,8 @@ const PostView = (props: PostWithUser) => {
       />
       <div className="flex flex-col">
         <div className="flex text-slate-300 flex gap-1">
-          <span>{`@${author.username}`}</span>
-          <span className="font-thin">{` · 1 hour ago`}</span>
+          <Link href={`/@${author.username}`}><span>{`@${author.username}`}</span></Link>
+          <Link href={`/post/${post.id}}`}><span className="font-thin">{` · 1 hour ago`}</span></Link>
           {/* Supposed to have relative time thing, but i couldn't make it work ts: ~1h1m*/}
         </div>
         <span className="text-2xl">{post.content}</span>
